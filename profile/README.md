@@ -38,9 +38,14 @@ A test is a repository created from
 [`ci-workflows`](https://github.com/G4Med-test/ci-workflows), which runs in the
 [`geant4-alma9`](https://github.com/G4Med-test/geant4-alma9) Apptainer image.
 
+> [!IMPORTANT]
+> **You cannot push to `main`.** The validation runs on INFN self-hosted runners, so no
+> code reaches them without review. Make every change on a branch and open a pull
+> request.
+
 1. **Create the repository**: *[Use this template](https://github.com/G4Med-test/template/generate)*,
    owner `G4Med-test`. The repository name becomes the name of the executable and of the
-   container.
+   container. Then create a branch for your work, e.g. `git switch -c my-change`.
 2. **Write the application** in `main.cc`, `src/` and `include/`.
 3. **Add the macros** to `macro/`: `unit.mac` is a one-event smoke test run on every
    push; the validation macros can have any name and must be self-contained.
@@ -49,9 +54,13 @@ A test is a repository created from
 5. **Write the parser** in `validation/parser.py`: `metadata(commands)` describes the run
    from its macro, `parse(job)` reads the output files and returns the plots for the
    validation portal.
-6. **Open a pull request.** The build and the unit test run on GitHub; after a maintainer
-   approves, the validation macros run on the Padova runners and the results are
-   collected. You can follow each step on the
+6. **Push your branch and open a pull request** to `main`:
+   - the build and the unit test run immediately on GitHub runners;
+   - a maintainer reviews the changes and approves them;
+   - only then do the validation macros run on the INFN runners, and the results are
+     collected.
+
+   You can follow each step on the
    [dashboard](https://g4med-test.github.io/dashboard/).
 7. **When the test is ready**, add it to
    [`ci-workflows/tests.json`](https://github.com/G4Med-test/ci-workflows/blob/main/tests.json)
