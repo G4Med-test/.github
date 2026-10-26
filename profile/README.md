@@ -49,6 +49,12 @@ A test is a repository created from
 2. **Write the application** in `main.cc`, `src/` and `include/`.
 3. **Add the macros** to `macro/`: `unit.mac` is a one-event smoke test run on every
    push; the validation macros can have any name and must be self-contained.
+   Put **every input parameter in the macro** (geometry, physics, beam, seed), as UI
+   commands, rather than in command-line arguments or environment variables: the
+   pipeline runs only `<executable> <macro>`, and a macro that describes the whole run
+   keeps the test simple and its results reproducible. To scan a parameter, write one
+   macro per value. See the
+   [template README](https://github.com/G4Med-test/template#put-every-input-parameter-in-the-macro).
 4. **List the validation macros** in `validation/config.json`, e.g.
    `{"macros": ["proton_100MeV.mac"]}`.
 5. **Write the parser** in `validation/parser.py`: `metadata(commands)` describes the run
