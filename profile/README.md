@@ -41,11 +41,15 @@ A test is a repository created from
 > [!IMPORTANT]
 > **You cannot push to `main`.** The validation runs on INFN self-hosted runners, so no
 > code reaches them without review. Make every change on a branch and open a pull
-> request.
+> request. The runners refuse any repository whose `main` is not protected this way.
 
-1. **Create the repository**: *[Use this template](https://github.com/G4Med-test/template/generate)*,
-   owner `G4Med-test`. The repository name becomes the name of the executable and of the
-   container. Then create a branch for your work, e.g. `git switch -c my-change`.
+1. **Ask a maintainer to create the repository**: give the name and a one-line
+   description. The name becomes the name of the executable and of the container.
+   The maintainer creates it from the template, with `main` already protected
+   (see [For maintainers](#for-maintainers)). If you created it yourself with
+   *[Use this template](https://github.com/G4Med-test/template/generate)*, ask a
+   maintainer to protect it: until then its pipeline stops before the INFN runners.
+   Then clone it and create a branch for your work, e.g. `git switch -c my-change`.
 2. **Write the application** in `main.cc`, `src/` and `include/`.
 3. **Add the macros** to `macro/`: `unit.mac` is a one-event smoke test run on every
    push; the validation macros can have any name and must be self-contained.
@@ -70,10 +74,30 @@ A test is a repository created from
    [dashboard](https://g4med-test.github.io/dashboard/).
 7. **When the test is ready**, add it to
    [`ci-workflows/tests.json`](https://github.com/G4Med-test/ci-workflows/blob/main/tests.json)
-   so that it runs with every new Geant4 version.
+   with a pull request, so that it runs with every new Geant4 version. The checks of that
+   pull request fail if the test's `main` is not protected.
 
 The [template README](https://github.com/G4Med-test/template#readme) describes the
 parser interface and how to build and run each step by hand.
+
+### For maintainers
+
+Organization owners add a test with one command of
+[`ci-workflows`](https://github.com/G4Med-test/ci-workflows#adding-a-test), which
+creates the public repository from the template and protects its `main` at once
+(`gh` logged in as an owner):
+
+```bash
+ci-workflows/scripts/add-test.sh MyTest "Short description"
+```
+
+For a repository that already exists it only adds the protection. Every protected
+`main` has the ruleset `reviewed-default-branch`: changes only through pull requests
+approved by someone else with write access, no force push or deletion, build and unit
+test passing. Owners can merge their own pull requests without approval, but cannot
+push directly either. Change rulesets only with `ci-workflows/scripts/protect-repos.sh`:
+the INFN runners and the checks of `ci-workflows` verify these rules, not who may
+bypass them.
 
 ## Running the tests on your machine or on a farm
 
